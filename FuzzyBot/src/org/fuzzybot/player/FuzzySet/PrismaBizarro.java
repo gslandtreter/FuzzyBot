@@ -12,8 +12,8 @@ public class PrismaBizarro {
 		gamma = g;
 		delta = d;
 		
-		inicio = new L(a, b);
-		fim = new Gamma(g,d);
+		inicio = new L(alpha, beta);
+		fim = new Gamma(gamma, delta);
 		
 	}
 	

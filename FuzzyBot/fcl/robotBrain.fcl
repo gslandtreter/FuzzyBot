@@ -1,0 +1,122 @@
+/*
+	Example: A tip calculation FIS (fuzzy inference system)
+	Calculates tip based on 'servie' and 'food'
+
+	If you want to about this example (and fuzzy logic), please 
+	read Matlab's tutorial on fuzzy logic toolbox 
+	http://www.mathworks.com/access/helpdesk/help/pdf_doc/fuzzy/fuzzy.pdf
+
+									Pablo Cingolani 
+									pcingola@users.sourceforge.net
+*/
+
+FUNCTION_BLOCK robotBrain	// Block definition (there may be more than one block per file)
+
+VAR_INPUT				// Define input variables
+	ball_angle : REAL;
+	target_angle : REAL;
+	obstacle_angle: REAL;
+	obstacle_distance: REAL;
+	ball_distance: REAL;
+END_VAR
+
+VAR_OUTPUT				// Define output variable
+	leftWheelTurn : REAL;
+	rightWheelTurn : REAL;
+END_VAR
+
+FUZZIFY ball_angle			// Fuzzify input variable 
+	TERM left := (-180, 1) (0, 0) ; 
+	TERM front := (-90, 0) (0,1) (90,0);
+	TERM right := (0, 0) (180, 1);
+	TERM behind := (-180, 1) (-90, 0) (90, 0) (180, 1);
+END_FUZZIFY
+
+FUZZIFY target_angle			// Fuzzify input variable 
+	TERM left := (-180, 1) (0, 0) ; 
+	TERM front := (-90, 0) (0,1) (90,0);
+	TERM right := (0, 0) (180, 1);
+END_FUZZIFY
+
+FUZZIFY obstacle_angle			// Fuzzify input variable 
+	TERM left := (-90, 1) (-45, 0) ; 
+	TERM front := (-90, 0) (0,1) (90,0);
+	TERM right := (45, 0) (90, 1);
+END_FUZZIFY
+
+FUZZIFY obstacle_distance		// Fuzzify input variable 
+	TERM veryNear := (0, 1) (50, 0) ; 
+	TERM near := (40, 1) (100,0);
+	TERM far := (100, 0) (400, 1);
+END_FUZZIFY
+
+FUZZIFY ball_distance		// Fuzzify input variable 
+	TERM veryNear := (0, 1) (100, 0) ; 
+	TERM far := (100, 1) (200,0);
+	TERM veryFar := (100, 0) (400, 1) (1000, 1);
+END_FUZZIFY
+
+DEFUZZIFY leftWheelTurn			// Fuzzify input variable 
+	TERM leftTurn := (-1,1) (0,0);
+	TERM forward := (0,0) (1,1);
+	TERM rightTurn := (0,0) (1,1);
+	TERM backward := (-1,1) (0,0);
+	METHOD : COG;		// Use 'Center Of Gravity' defuzzification method
+	DEFAULT := 0;		// Default value is 0 (if no rule activates defuzzifier)
+END_DEFUZZIFY
+
+DEFUZZIFY rightWheelTurn			// Fuzzify input variable 
+	TERM leftTurn := (0,0) (1,1);
+	TERM forward := (0,0) (1,1);
+	TERM rightTurn := (-1,1) (0,0);
+	TERM backward := (-1,1) (0,0);
+	METHOD : COG;		// Use 'Center Of Gravity' defuzzification method
+	DEFAULT := 0;		// Default value is 0 (if no rule activates defuzzifier)
+END_DEFUZZIFY
+
+RULEBLOCK No1
+	AND : MIN;			// Use 'min' for 'and' (also implicit use 'max' for 'or' to fulfill DeMorgan's Law)
+	ACT : MIN;			// Use 'min' activation method
+	ACCU : MAX;			// Use 'max' accumulation method
+
+	RULE 1 : IF ball_angle IS left AND target_angle IS left THEN leftWheelTurn IS forward WITH 0.7;
+	RULE 2 : IF ball_angle IS left AND target_angle IS front  THEN leftWheelTurn IS leftTurn WITH 0.7;
+	RULE 3 : IF ball_angle IS left AND target_angle IS right  THEN leftWheelTurn IS leftTurn WITH 0.7;
+	
+	RULE 4 : IF ball_angle IS front AND target_angle IS left  THEN leftWheelTurn IS rightTurn WITH 0.7;
+	RULE 5 : IF ball_angle IS front AND target_angle IS front  THEN leftWheelTurn IS forward WITH 0.7;
+	RULE 6 : IF ball_angle IS front AND target_angle IS right  THEN leftWheelTurn IS leftTurn WITH 0.7;
+	
+	RULE 7 : IF ball_angle IS right AND target_angle IS left  THEN leftWheelTurn IS rightTurn WITH 0.7;
+	RULE 8 : IF ball_angle IS right AND target_angle IS front  THEN leftWheelTurn IS rightTurn WITH 0.7;
+	RULE 9 : IF ball_angle IS right AND target_angle IS right  THEN leftWheelTurn IS forward WITH 0.7;
+	
+	RULE 10 : IF ball_angle IS left AND target_angle IS left  THEN rightWheelTurn IS forward WITH 0.7;
+	RULE 11 : IF ball_angle IS left AND target_angle IS front  THEN rightWheelTurn IS leftTurn WITH 0.7;
+	RULE 12 : IF ball_angle IS left AND target_angle IS right  THEN rightWheelTurn IS leftTurn WITH 0.7;
+	
+	RULE 13 : IF ball_angle IS front AND target_angle IS left  THEN rightWheelTurn IS rightTurn WITH 0.7;
+	RULE 14 : IF ball_angle IS front AND target_angle IS front THEN rightWheelTurn IS forward WITH 0.7;
+	RULE 15 : IF ball_angle IS front AND target_angle IS right  THEN rightWheelTurn IS leftTurn WITH 0.7;
+	
+	RULE 16 : IF ball_angle IS right AND target_angle IS left THEN rightWheelTurn IS rightTurn WITH 0.7;
+	RULE 17 : IF ball_angle IS right AND target_angle IS front THEN rightWheelTurn IS rightTurn WITH 0.7;
+	RULE 18 : IF ball_angle IS right AND target_angle IS right THEN rightWheelTurn IS forward WITH 0.7;
+	
+	RULE 19 : IF (obstacle_angle IS front) AND obstacle_distance IS veryNear THEN leftWheelTurn IS backward WITH 0.8;
+	RULE 20 : IF (obstacle_angle IS front) AND obstacle_distance IS veryNear THEN rightWheelTurn IS backward WITH 0.8;
+	
+	RULE 23 : IF ball_angle IS front THEN leftWheelTurn IS forward WITH 1;
+	RULE 24 : IF ball_angle IS front THEN rightWheelTurn IS forward WITH 1;
+	
+	RULE 25 : IF ball_angle IS right AND (ball_distance IS far OR ball_distance IS veryFar) THEN leftWheelTurn IS rightTurn WITH 1;
+	RULE 26 : IF ball_angle IS right AND (ball_distance IS far OR ball_distance IS veryFar) THEN rightWheelTurn IS rightTurn WITH 1;
+	
+	RULE 27 : IF ball_angle IS left AND (ball_distance IS far OR ball_distance IS veryFar) THEN leftWheelTurn IS leftTurn WITH 1;
+	RULE 28 : IF ball_angle IS left AND (ball_distance IS far OR ball_distance IS veryFar) THEN rightWheelTurn IS leftTurn WITH 1;	
+	
+	
+	
+END_RULEBLOCK
+
+END_FUNCTION_BLOCK

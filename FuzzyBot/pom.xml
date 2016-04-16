@@ -6,26 +6,62 @@
   <name>FuzzyBot</name>
   <build>
     <sourceDirectory>src</sourceDirectory>
+    
+    
     <plugins>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.3</version>
-        <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
-        </configuration>
-      </plugin>
+    
+    <plugin>
+              <artifactId>maven-assembly-plugin</artifactId>
+              <configuration>
+                  <archive>
+                      <manifest>
+                          <addClasspath>true</addClasspath>
+                          <mainClass>org.fuzzybot.player.Main</mainClass>
+                      </manifest>
+                  </archive>
+                  <descriptorRefs>
+                      <descriptorRef>jar-with-dependencies</descriptorRef>
+                  </descriptorRefs>
+              </configuration>
+              <executions>
+                  <execution>
+                      <id>make-my-jar-with-dependencies</id>
+                      <phase>package</phase>
+                      <goals>
+                          <goal>single</goal>
+                      </goals>
+                  </execution>
+              </executions>
+          </plugin>
+          
+
     </plugins>
+    
+    
   </build>
   
   <dependencies>
   
+  <dependency>
+	<groupId>gnu.getopt</groupId>
+	<artifactId>java-getopt</artifactId>
+	<version>1.0.13</version>
+</dependency>
+
   <dependency>
     <groupId>robosoccer</groupId>
     <artifactId>com.robosoccer</artifactId>
     <version>1.0</version>
     <scope>system</scope>
     <systemPath>${project.basedir}/lib/RoboSoccer.jar</systemPath>
+</dependency>
+
+ <dependency>
+    <groupId>jfuzzylogic</groupId>
+    <artifactId>com.jfuzzylogic</artifactId>
+    <version>1.0</version>
+    <scope>system</scope>
+    <systemPath>${project.basedir}/lib/jFuzzyLogic.jar</systemPath>
 </dependency>
 
   </dependencies>
