@@ -3,11 +3,10 @@ package org.fuzzybot.player;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
-import org.robosoccer.RoboSoccer;
-
 import gnu.getopt.Getopt;
 import net.sourceforge.jFuzzyLogic.FIS;
 import net.sourceforge.jFuzzyLogic.FunctionBlock;
+import net.sourceforge.jFuzzyLogic.plot.JFuzzyChart;
 import net.sourceforge.jFuzzyLogic.rule.Variable;
 
 public class Main {
@@ -60,7 +59,6 @@ public class Main {
 	}
 
 	public static void main(String[] args) throws UnknownHostException, IOException {
-		// TODO Auto-generated method stub
 
 		getArgs(args);
 		
@@ -75,18 +73,10 @@ public class Main {
 
 		FunctionBlock functionBlock = fis.getFunctionBlock("robotBrain");
 
-		// Show
-		// JFuzzyChart.get().chart(functionBlock);
-
-		// Show output variable's chart
-
-		// JFuzzyChart.get().chart(tip, tip.getDefuzzifier(), true);
-
-		// Print ruleSet
-		// System.out.println(fis);
-
 		MyRoboSoccer soccer = new MyRoboSoccer(hostName, port, debug);
 
+		boolean showGraph = false;
+		
 		while (true) {
 
 			// pega angulos
@@ -140,6 +130,11 @@ public class Main {
 			System.out.println(outStr);
 
 			soccer.doAction(forcaEsq, forcaDir);
+			
+			if(showGraph) {
+				JFuzzyChart.get().chart(leftWheelTurn, leftWheelTurn.getDefuzzifier(), true);
+				JFuzzyChart.get().chart(rightWheelTurn, rightWheelTurn.getDefuzzifier(), true);
+			}
 		}
 
 	}

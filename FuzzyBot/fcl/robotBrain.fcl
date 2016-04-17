@@ -27,21 +27,22 @@ END_VAR
 
 FUZZIFY ball_angle			// Fuzzify input variable 
 	TERM left := (-180, 1) (0, 0) ; 
-	TERM front := (-90, 0) (0,1) (90,0);
+	TERM front := (-70, 0) (0,1) (70,0);
 	TERM right := (0, 0) (180, 1);
 	TERM behind := (-180, 1) (-90, 0) (90, 0) (180, 1);
 END_FUZZIFY
 
 FUZZIFY target_angle			// Fuzzify input variable 
 	TERM left := (-180, 1) (0, 0) ; 
-	TERM front := (-90, 0) (0,1) (90,0);
+	TERM front := (-50, 0) (0,1) (50,0);
 	TERM right := (0, 0) (180, 1);
+	TERM behind := (-180, 1) (-90, 0) (90, 0) (180, 1);
 END_FUZZIFY
 
 FUZZIFY obstacle_angle			// Fuzzify input variable 
-	TERM left := (-90, 1) (-45, 0) ; 
+	TERM left := (-120, 1) (-45, 0) ; 
 	TERM front := (-90, 0) (0,1) (90,0);
-	TERM right := (45, 0) (90, 1);
+	TERM right := (45, 0) (120, 1);
 END_FUZZIFY
 
 FUZZIFY obstacle_distance		// Fuzzify input variable 
@@ -79,42 +80,47 @@ RULEBLOCK No1
 	ACT : MIN;			// Use 'min' activation method
 	ACCU : MAX;			// Use 'max' accumulation method
 
-	RULE 1 : IF ball_angle IS left AND target_angle IS left THEN leftWheelTurn IS forward WITH 0.7;
-	RULE 2 : IF ball_angle IS left AND target_angle IS front  THEN leftWheelTurn IS leftTurn WITH 0.7;
-	RULE 3 : IF ball_angle IS left AND target_angle IS right  THEN leftWheelTurn IS leftTurn WITH 0.7;
+	RULE 1 : IF ball_angle IS left AND target_angle IS left THEN leftWheelTurn IS forward WITH 0.5;
+	RULE 2 : IF ball_angle IS left AND target_angle IS front  THEN leftWheelTurn IS leftTurn WITH 0.5;
+	RULE 3 : IF ball_angle IS left AND target_angle IS right  THEN leftWheelTurn IS leftTurn WITH 0.5;
 	
-	RULE 4 : IF ball_angle IS front AND target_angle IS left  THEN leftWheelTurn IS rightTurn WITH 0.7;
-	RULE 5 : IF ball_angle IS front AND target_angle IS front  THEN leftWheelTurn IS forward WITH 0.7;
-	RULE 6 : IF ball_angle IS front AND target_angle IS right  THEN leftWheelTurn IS leftTurn WITH 0.7;
+	RULE 4 : IF ball_angle IS front AND target_angle IS left  THEN leftWheelTurn IS rightTurn WITH 0.5;
+	RULE 5 : IF ball_angle IS front AND target_angle IS front  THEN leftWheelTurn IS forward WITH 0.5;
+	RULE 6 : IF ball_angle IS front AND target_angle IS right  THEN leftWheelTurn IS leftTurn WITH 0.5;
 	
-	RULE 7 : IF ball_angle IS right AND target_angle IS left  THEN leftWheelTurn IS rightTurn WITH 0.7;
-	RULE 8 : IF ball_angle IS right AND target_angle IS front  THEN leftWheelTurn IS rightTurn WITH 0.7;
-	RULE 9 : IF ball_angle IS right AND target_angle IS right  THEN leftWheelTurn IS forward WITH 0.7;
+	RULE 7 : IF ball_angle IS right AND target_angle IS left  THEN leftWheelTurn IS rightTurn WITH 0.5;
+	RULE 8 : IF ball_angle IS right AND target_angle IS front  THEN leftWheelTurn IS rightTurn WITH 0.5;
+	RULE 9 : IF ball_angle IS right AND target_angle IS right  THEN leftWheelTurn IS forward WITH 0.5;
 	
-	RULE 10 : IF ball_angle IS left AND target_angle IS left  THEN rightWheelTurn IS forward WITH 0.7;
-	RULE 11 : IF ball_angle IS left AND target_angle IS front  THEN rightWheelTurn IS leftTurn WITH 0.7;
-	RULE 12 : IF ball_angle IS left AND target_angle IS right  THEN rightWheelTurn IS leftTurn WITH 0.7;
+	RULE 10 : IF ball_angle IS left AND target_angle IS left  THEN rightWheelTurn IS forward WITH 0.5;
+	RULE 11 : IF ball_angle IS left AND target_angle IS front  THEN rightWheelTurn IS leftTurn WITH 0.5;
+	RULE 12 : IF ball_angle IS left AND target_angle IS right  THEN rightWheelTurn IS leftTurn WITH 0.5;
 	
-	RULE 13 : IF ball_angle IS front AND target_angle IS left  THEN rightWheelTurn IS rightTurn WITH 0.7;
-	RULE 14 : IF ball_angle IS front AND target_angle IS front THEN rightWheelTurn IS forward WITH 0.7;
-	RULE 15 : IF ball_angle IS front AND target_angle IS right  THEN rightWheelTurn IS leftTurn WITH 0.7;
+	RULE 13 : IF ball_angle IS front AND target_angle IS left  THEN rightWheelTurn IS rightTurn WITH 0.5;
+	RULE 14 : IF ball_angle IS front AND target_angle IS front THEN rightWheelTurn IS forward WITH 0.5;
+	RULE 15 : IF ball_angle IS front AND target_angle IS right  THEN rightWheelTurn IS leftTurn WITH 0.5;
 	
-	RULE 16 : IF ball_angle IS right AND target_angle IS left THEN rightWheelTurn IS rightTurn WITH 0.7;
-	RULE 17 : IF ball_angle IS right AND target_angle IS front THEN rightWheelTurn IS rightTurn WITH 0.7;
-	RULE 18 : IF ball_angle IS right AND target_angle IS right THEN rightWheelTurn IS forward WITH 0.7;
+	RULE 16 : IF ball_angle IS right AND target_angle IS left THEN rightWheelTurn IS rightTurn WITH 0.5;
+	RULE 17 : IF ball_angle IS right AND target_angle IS front THEN rightWheelTurn IS rightTurn WITH 0.5;
+	RULE 18 : IF ball_angle IS right AND target_angle IS right THEN rightWheelTurn IS forward WITH 0.5;
 	
-	RULE 19 : IF (obstacle_angle IS front) AND obstacle_distance IS veryNear THEN leftWheelTurn IS backward WITH 0.8;
-	RULE 20 : IF (obstacle_angle IS front) AND obstacle_distance IS veryNear THEN rightWheelTurn IS backward WITH 0.8;
+	RULE 19 : IF obstacle_angle IS front AND obstacle_distance IS veryNear THEN leftWheelTurn IS backward WITH 0.8;
+	RULE 20 : IF obstacle_angle IS front AND obstacle_distance IS veryNear THEN rightWheelTurn IS backward WITH 0.8;
 	
-	RULE 23 : IF ball_angle IS front THEN leftWheelTurn IS forward WITH 1;
-	RULE 24 : IF ball_angle IS front THEN rightWheelTurn IS forward WITH 1;
+	RULE 21 : IF ball_angle IS front AND ball_distance IS NOT veryNear THEN leftWheelTurn IS forward WITH 1;
+	RULE 22 : IF ball_angle IS front AND ball_distance IS NOT veryNear THEN rightWheelTurn IS forward WITH 1;
 	
-	RULE 25 : IF ball_angle IS right AND (ball_distance IS far OR ball_distance IS veryFar) THEN leftWheelTurn IS rightTurn WITH 1;
-	RULE 26 : IF ball_angle IS right AND (ball_distance IS far OR ball_distance IS veryFar) THEN rightWheelTurn IS rightTurn WITH 1;
+	RULE 23 : IF ball_angle IS right AND (ball_distance IS far OR ball_distance IS veryFar) THEN leftWheelTurn IS rightTurn WITH 1;
+	RULE 24 : IF ball_angle IS right AND (ball_distance IS far OR ball_distance IS veryFar) THEN rightWheelTurn IS rightTurn WITH 1;
 	
-	RULE 27 : IF ball_angle IS left AND (ball_distance IS far OR ball_distance IS veryFar) THEN leftWheelTurn IS leftTurn WITH 1;
-	RULE 28 : IF ball_angle IS left AND (ball_distance IS far OR ball_distance IS veryFar) THEN rightWheelTurn IS leftTurn WITH 1;	
+	RULE 25 : IF ball_angle IS left AND (ball_distance IS far OR ball_distance IS veryFar) THEN leftWheelTurn IS leftTurn WITH 1;
+	RULE 26 : IF ball_angle IS left AND (ball_distance IS far OR ball_distance IS veryFar) THEN rightWheelTurn IS leftTurn WITH 1;	
 	
+	RULE 27 : IF obstacle_angle IS front AND obstacle_distance IS veryNear AND ball_angle IS left THEN leftWheelTurn IS leftTurn WITH 0.8;
+	RULE 28 : IF obstacle_angle IS front AND obstacle_distance IS veryNear AND ball_angle IS left THEN rightWheelTurn IS leftTurn WITH 0.8;
+	
+	RULE 29 : IF obstacle_angle IS front AND obstacle_distance IS veryNear AND ball_angle IS right THEN leftWheelTurn IS rightTurn WITH 0.8;
+	RULE 30 : IF obstacle_angle IS front AND obstacle_distance IS veryNear AND ball_angle IS right THEN rightWheelTurn IS rightTurn WITH 0.8;
 	
 	
 END_RULEBLOCK
